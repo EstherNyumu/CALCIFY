@@ -3,6 +3,7 @@ package com.example.calcify
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,9 +12,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -21,11 +28,17 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.calcify.ui.theme.Brown
+import com.example.calcify.ui.theme.Brownie
 import com.example.calcify.ui.theme.CalcifyTheme
+import com.example.calcify.ui.theme.Chalky
+import com.example.calcify.ui.theme.lessB
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,7 +48,7 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-//                    color = MaterialTheme.colorScheme.background
+                    color = Chalky
                 ) {
                     Calculator()
                 }
@@ -52,25 +65,31 @@ fun Calculator() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        Image(painter = painterResource(id = R.drawable.calcify),
+            modifier = Modifier.height(100.dp),
+            contentDescription = "calcify icon")
         Spacer(modifier = Modifier.height(30.dp))
         Text(
             text = "CALCIFY",
             fontWeight = FontWeight.Bold,
-            fontSize = 20.sp
+            fontSize = 40.sp,
+            color = Brownie
         )
         Spacer(modifier = Modifier.height(30.dp))
-        intArrayOf()
+
         var numbers by rememberSaveable { mutableStateOf("") }
-//        var answer by remember { mutableStateOf("") }
-        TextField(
+        OutlinedTextField(
             value = numbers,
             onValueChange = { numbers = it },
             modifier = Modifier.height(150.dp),
-            readOnly = true
+            readOnly = true,
+            colors = OutlinedTextFieldDefaults.colors(
+                unfocusedContainerColor = lessB,
+                focusedContainerColor = lessB,
+                focusedBorderColor = Brown,
+                unfocusedBorderColor = Brown
+            )
         )
-//        TextField(value = answer,
-//            onValueChange = {answer= it},
-//            modifier = Modifier.height(150.dp))
         Spacer(modifier = Modifier.height(30.dp))
 
         val buttonRows = listOf(
@@ -83,9 +102,11 @@ fun Calculator() {
         buttonRows.forEach { rowItems ->
             Row {
                 rowItems.forEach { item ->
-                    Button(onClick = {
+                    Button(
+                        colors = ButtonDefaults.buttonColors(Brown),
+                        onClick = {
                             when (item) {
-                                "Clear" -> numbers = " "
+                                "Clear" -> numbers = ""
                                 "Delete" -> if (numbers.isNotEmpty())numbers = numbers.dropLast(1)
                                 "=" -> numbers = calculate(numbers)
                                 else -> numbers += item
@@ -99,23 +120,29 @@ fun Calculator() {
             }
             Spacer(modifier = Modifier.height(10.dp))
         }
-
-
-
-
-
-
     }
 }
 
 fun calculate(numbers: String): String {
+    var result = ""
+    if (numbers.contains("+")){
+        var parts = numbers.split("+")
+        result = (parts[0].toInt() + parts[1].toInt()).toString()
+    }
+    if (numbers.contains("-")){
+        var parts = numbers.split("-")
+        result = (parts[0].toInt() - parts[1].toInt()).toString()
+    }
+    if (numbers.contains("x")){
+        var parts = numbers.split("x")
+        result = (parts[0].toInt() * parts[1].toInt()).toString()
+    }
+    if (numbers.contains("/")){
+        var parts = numbers.split("/")
+        result = (parts[0].toDouble() / parts[1].toDouble()).toString()
+    }
 
-    var myList = (numbers.split("+"))
-    val a = myList.get(0);
-    val b = myList.get(1)
-    var result  = a.toInt() + b.toInt()
-
-    return result.toString()
+    return result
 }
 
 
